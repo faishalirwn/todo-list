@@ -1,0 +1,10 @@
+button {
+    background: none;    
+    border: none;
+    cursor: pointer;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 268px 1fr 1fr;
+}
