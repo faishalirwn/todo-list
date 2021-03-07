@@ -12,7 +12,7 @@
     <div id="container">
         <div id="sidebar">
             <span>List</span>
-            <ul>
+            <ul id="project-list">
                 <li>
                     <button>Default</button>
                 </li>
@@ -24,7 +24,7 @@
         </div>
         <div id="tasks">
             <h3>Default</h3>
-            <input id="" type="text" name="" placeholder='Add task to "Default"'>
+            <input id="task-input" type="text" name="" placeholder='Add task to "Default"'>
             <ul>
                 <li>
                     <button>
@@ -58,7 +58,13 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div>        
+    </div>
+    <div id="add-list-modal">
+        <h1>Add List</h1>
+        <label for="list-name-input">List name: </label>
+        <input type="text" id="list-name-input" name="" placeholder="Name">
+        <button id="add-list-btn">Add</button>
     </div>
     <script src="./main.js"></script>
 </body>
