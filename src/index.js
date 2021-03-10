@@ -53,9 +53,18 @@ const view = (() => {
         const projects = projectStorage.getProjects()
         projects.forEach((project) => {
             const li = document.createElement('li');
-            const btn = document.createElement('button');
-            btn.textContent = project.title;
-            li.appendChild(btn);
+
+            const titleBtn = document.createElement('button');
+            titleBtn.textContent = project.title;
+            titleBtn.setAttribute('class', 'project-title');
+
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'x';
+            removeBtn.setAttribute('class', 'project-remove-btn');
+
+            li.appendChild(titleBtn);
+            li.appendChild(removeBtn);
+
             projectListEl.appendChild(li);
         });
     };
@@ -65,7 +74,7 @@ const view = (() => {
 
 const controller = (() => {
     const addProject = () => {
-        const projectTitleInput = document.querySelector('#list-name-input');
+        const projectTitleInput = document.querySelector('#project-name-input');
         const newProject = new Project(projectTitleInput.value);
         projectStorage.addProject(newProject);
         view.render();
@@ -76,12 +85,13 @@ const controller = (() => {
         const sampleProject2 = new Project('Errands');
         projectStorage.addProject(sampleProject1);
         projectStorage.addProject(sampleProject2);
+        view.render();
     }
 
     return { addProject, initializeProjects }
 })();
 
-const addProjectBtn = document.querySelector('#add-list-btn');
+const addProjectBtn = document.querySelector('#add-project-btn');
 addProjectBtn.addEventListener('click', controller.addProject);
 
 controller.initializeProjects();
