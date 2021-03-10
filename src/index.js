@@ -14,66 +14,50 @@ const projectStorage = (() => {
     return { addProject, removeProject, getProjects }
 })();
 
-const Todo = (title, desc, due, priority, completed) => {
-    const getTitle = () => title;
-    const getDesc = () => desc;
-    const getDue = () => due;
-    const getPriority = () => priority;
-    const getCompleted = () => completed;
+class Todo {
+    constructor(title, desc, due, priority, completed) {
+        this.title = title;
+        this.desc = desc;
+        this.due = due;
+        this.priority = priority;
+        this.completed = completed;
+    }
 
-    const setTitle = (newTitle) => {
-        title = newTitle;
+    toggleCompleted() {
+        this.completed = !this.completed;
     };
-    const setDesc = (newDesc) => {
-        desc = newDesc;
-    };
-    const setDue = (newDue) => {
-        due = newDue;
-    };
-    const setPriority = (newPriority) => {
-        priority = newPriority;
-    };
-
-    const toggleCompleted = () => {
-        completed = !completed;
-    };
-
-    return { getTitle, getDesc, getDue, getPriority, getCompleted, setTitle, setDesc, setDue, setPriority, toggleCompleted }
 };
 
-const Project = (title) => {
-    let _todos = [];
+class Project {
+    constructor(title) {
+        this.title = title;
+        this.todos = [];
+    }
 
-    const getTitle = () => title;
-
-    const setTitle = (newTitle) => {
-        title = newTitle;
+    addTodo(todo) {
+        this.todos.push(todo);
     };
 
-    const addTodo = (todo) => {
-        _todos.push(todo);
+    removeTodo(todoIndex) {
+        this.todos.splice(todoIndex, 1);
     };
-
-    const removeTodo = (todoIndex) => {
-        project.splice(todoIndex, 1);
-    };
-
-    return { getTitle, addTodo, removeTodo }
 };
 
 const view = (() => {
 
     const render = () => {
         const projectListEl = document.querySelector('#project-list');
+        while (projectListEl.firstChild) {            
+            projectListEl.removeChild(projectListEl.lastChild);
+        }
         const projects = projectStorage.getProjects()
-        projects.forEach((project, index) => {
+        projects.forEach((project) => {
             const li = document.createElement('li');
             const btn = document.createElement('button');
-            btn.textContent = project.getTitle();
+            btn.textContent = project.title;
             li.appendChild(btn);
             projectListEl.appendChild(li);
-        })
-        console.log(JSON.stringify(projectStorage.getProjects()));        
+        });
     };
 
     return { render }
@@ -82,13 +66,22 @@ const view = (() => {
 const controller = (() => {
     const addProject = () => {
         const projectTitleInput = document.querySelector('#list-name-input');
-        const newProject = Project(projectTitleInput.value);
+        const newProject = new Project(projectTitleInput.value);
         projectStorage.addProject(newProject);
         view.render();
     };
-    return { addProject }
+
+    const initializeProjects = () => {
+        const sampleProject1 = new Project('Default');
+        const sampleProject2 = new Project('Errands');
+        projectStorage.addProject(sampleProject1);
+        projectStorage.addProject(sampleProject2);
+    }
+
+    return { addProject, initializeProjects }
 })();
 
 const addProjectBtn = document.querySelector('#add-list-btn');
-
 addProjectBtn.addEventListener('click', controller.addProject);
+
+controller.initializeProjects();
