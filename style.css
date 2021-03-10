@@ -4,7 +4,30 @@ button {
     cursor: pointer;
 }
 
+ul {
+    padding: 0;
+}
+
+li {
+    list-style-type: none;
+}
+
 #container {
     display: grid;
     grid-template-columns: 268px 1fr 1fr;
+}
+
+#project-list li {
+    position: relative;
+}
+
+.project-title {
+    width: 100%; 
+    text-align: left;
+}
+
+.project-remove-btn {
+    position: absolute;
+    top: 0;
+    right: 25px;
 }
