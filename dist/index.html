@@ -14,7 +14,7 @@
             <span>Projects</span>
             <ul id="project-list">
             </ul>
-            <button>+ Add Project</button>
+            <button id="add-project-modal-btn">+ Add Project</button>
         </div>
         <div id="tasks">
             <h3>Default</h3>
@@ -54,11 +54,13 @@
             </div>
         </div>        
     </div>
-    <div id="add-project-modal">
-        <h1>Add Project</h1>
-        <label for="project-name-input">Project name: </label>
-        <input type="text" id="project-name-input" name="" placeholder="Name">
-        <button id="add-project-btn">Add</button>
+    <div id="modal-bg" class="display-none">
+        <div id="add-project-modal">
+            <h1>Add Project</h1>
+            <label for="project-name-input">Project name: </label>
+            <input type="text" id="project-name-input" name="" placeholder="Name" autocomplete="off">
+            <button id="add-project-btn">Add</button>
+        </div>
     </div>
     <script src="./main.js"></script>
 </body>

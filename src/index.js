@@ -111,7 +111,7 @@ const view = (() => {
     };
 
     const render = () => {
-        renderProjects();
+        renderProjects();        
     }
 
     return { render }
@@ -144,8 +144,24 @@ const controller = (() => {
     }
 
     const initializeEventListener = () => {
+        const modalBg = document.querySelector('#modal-bg');
+        modalBg.addEventListener('click', (e) => {
+            if (e.target.id === 'modal-bg') {
+                modalBg.removeAttribute('style');
+                modalBg.classList.toggle('display-none');
+            }
+        })   
+        const addProjectModalBtn = document.querySelector('#add-project-modal-btn');
+        addProjectModalBtn.addEventListener('click', () => {            
+            modalBg.classList.toggle('display-none');
+            modalBg.style.display = 'flex';
+        });
         const addProjectBtn = document.querySelector('#add-project-btn');
-        addProjectBtn.addEventListener('click', addProject);
+        addProjectBtn.addEventListener('click', () => {
+            addProject();
+            modalBg.removeAttribute('style');
+            modalBg.classList.toggle('display-none');
+        });
     }
 
     return { addProject, removeProject, updateProject, initializeProjects, initializeEventListener }
