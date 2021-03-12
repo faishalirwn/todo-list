@@ -10,8 +10,12 @@ const projectStorage = (() => {
     const removeProject = (index) => {
         _projects.splice(index, 1);
     };
+
+    const updateProject = (index, title) => {
+        _projects[index].changeTitle(title);
+    };
     
-    return { addProject, removeProject, getProjects }
+    return { addProject, removeProject, updateProject, getProjects }
 })();
 
 class Todo {
@@ -41,6 +45,10 @@ class Project {
     removeTodo(todoIndex) {
         this.todos.splice(todoIndex, 1);
     };
+
+    changeTitle(title) {
+        this.title = title;
+    }
 };
 
 const view = (() => {
@@ -57,17 +65,47 @@ const view = (() => {
 
             const titleBtn = document.createElement('button');
             titleBtn.textContent = project.title;
-            titleBtn.setAttribute('class', 'project-title');
+            titleBtn.classList.add('project-title');
 
             const removeBtn = document.createElement('button');
-            removeBtn.textContent = 'x';
-            removeBtn.setAttribute('class', 'project-remove-btn');
+            removeBtn.textContent = '✖';
+            removeBtn.classList.add('project-remove-btn');
             removeBtn.addEventListener('click', (e) => {
                 const projectIndex = Number(e.target.parentNode.dataset.index);
                 controller.removeProject(projectIndex);
             });
 
+            const editInput = document.createElement('input');
+            editInput.setAttribute('type', 'text');
+            editInput.classList.add('project-edit-input', 'display-none');
+            editInput.addEventListener('keypress', (e) => {
+                const projectIndex = Number(e.target.parentNode.dataset.index);                
+                if (e.key === 'Enter') {
+                    const editInputVal = e.target.value;
+                    controller.updateProject(projectIndex, editInputVal);
+                }
+            });
+            editInput.addEventListener('blur', (e) => {
+                titleBtn.classList.toggle('display-none');
+                editInput.classList.toggle('display-none');
+                const projectIndex = Number(e.target.parentNode.dataset.index);                
+                const editInputVal = e.target.value;
+                controller.updateProject(projectIndex, editInputVal);
+            });
+            
+            const editBtn = document.createElement('button');
+            editBtn.textContent = '✏️';
+            editBtn.classList.add('project-edit-btn');
+            editBtn.addEventListener('click', () => {
+                titleBtn.classList.toggle('display-none');
+                editInput.classList.toggle('display-none');
+                editInput.value = project.title;
+                editInput.focus();
+            });            
+
             li.appendChild(titleBtn);
+            li.appendChild(editInput);
+            li.appendChild(editBtn);
             li.appendChild(removeBtn);
 
             projectListEl.appendChild(li);
@@ -90,6 +128,11 @@ const controller = (() => {
         view.render();
     }
 
+    const updateProject = (projectIndex, title) => {
+        projectStorage.updateProject(projectIndex, title);
+        view.render();
+    }
+
     const initializeProjects = () => {
         const sampleProject1 = new Project('Default');
         const sampleProject2 = new Project('Errands');
@@ -103,7 +146,7 @@ const controller = (() => {
         addProjectBtn.addEventListener('click', addProject);
     }
 
-    return { addProject, removeProject, initializeProjects, initializeEventListener }
+    return { addProject, removeProject, updateProject, initializeProjects, initializeEventListener }
 })();
 
 controller.initializeProjects();
