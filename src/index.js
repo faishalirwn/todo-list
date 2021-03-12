@@ -118,10 +118,8 @@ const view = (() => {
 })();
 
 const controller = (() => {
-    const addProject = () => {
-        const projectTitleInput = document.querySelector('#project-name-input');
-        const newProject = new Project(projectTitleInput.value);
-        projectStorage.addProject(newProject);
+    const addProject = (project) => {
+        projectStorage.addProject(project);
         view.render();
     };
 
@@ -144,6 +142,8 @@ const controller = (() => {
     }
 
     const initializeEventListener = () => {
+        const projectTitleInput = document.querySelector('#project-name-input');
+
         const modalBg = document.querySelector('#modal-bg');
         modalBg.addEventListener('click', (e) => {
             if (e.target.id === 'modal-bg') {
@@ -152,13 +152,16 @@ const controller = (() => {
             }
         })   
         const addProjectModalBtn = document.querySelector('#add-project-modal-btn');
-        addProjectModalBtn.addEventListener('click', () => {            
+        addProjectModalBtn.addEventListener('click', () => {
             modalBg.classList.toggle('display-none');
             modalBg.style.display = 'flex';
+            projectTitleInput.focus();
+            projectTitleInput.select();
         });
         const addProjectBtn = document.querySelector('#add-project-btn');
         addProjectBtn.addEventListener('click', () => {
-            addProject();
+            const newProject = new Project(projectTitleInput.value);
+            addProject(newProject);
             modalBg.removeAttribute('style');
             modalBg.classList.toggle('display-none');
         });
