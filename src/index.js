@@ -52,8 +52,7 @@ class Project {
 };
 
 const view = (() => {
-
-    const render = () => {
+    const renderProjects = () => {
         const projectListEl = document.querySelector('#project-list');
         while (projectListEl.firstChild) {            
             projectListEl.removeChild(projectListEl.lastChild);
@@ -78,16 +77,14 @@ const view = (() => {
             const editInput = document.createElement('input');
             editInput.setAttribute('type', 'text');
             editInput.classList.add('project-edit-input', 'display-none');
-            editInput.addEventListener('keypress', (e) => {
-                const projectIndex = Number(e.target.parentNode.dataset.index);                
-                if (e.key === 'Enter') {
+            editInput.addEventListener('keydown', (e) => {
+                const projectIndex = Number(e.target.parentNode.dataset.index);
+                if (e.key === 'Enter' || e.key === 'Escape') {
                     const editInputVal = e.target.value;
                     controller.updateProject(projectIndex, editInputVal);
                 }
             });
             editInput.addEventListener('blur', (e) => {
-                titleBtn.classList.toggle('display-none');
-                editInput.classList.toggle('display-none');
                 const projectIndex = Number(e.target.parentNode.dataset.index);                
                 const editInputVal = e.target.value;
                 controller.updateProject(projectIndex, editInputVal);
@@ -101,6 +98,7 @@ const view = (() => {
                 editInput.classList.toggle('display-none');
                 editInput.value = project.title;
                 editInput.focus();
+                editInput.select();
             });            
 
             li.appendChild(titleBtn);
@@ -111,6 +109,10 @@ const view = (() => {
             projectListEl.appendChild(li);
         });
     };
+
+    const render = () => {
+        renderProjects();
+    }
 
     return { render }
 })();
