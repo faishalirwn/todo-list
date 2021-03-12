@@ -51,8 +51,9 @@ const view = (() => {
             projectListEl.removeChild(projectListEl.lastChild);
         }
         const projects = projectStorage.getProjects()
-        projects.forEach((project) => {
+        projects.forEach((project, index) => {
             const li = document.createElement('li');
+            li.setAttribute('data-index', index);
 
             const titleBtn = document.createElement('button');
             titleBtn.textContent = project.title;
@@ -61,6 +62,10 @@ const view = (() => {
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'x';
             removeBtn.setAttribute('class', 'project-remove-btn');
+            removeBtn.addEventListener('click', (e) => {
+                const projectIndex = Number(e.target.parentNode.dataset.index);
+                controller.removeProject(projectIndex);
+            });
 
             li.appendChild(titleBtn);
             li.appendChild(removeBtn);
@@ -80,6 +85,11 @@ const controller = (() => {
         view.render();
     };
 
+    const removeProject = (projectIndex) => {
+        projectStorage.removeProject(projectIndex);
+        view.render();
+    }
+
     const initializeProjects = () => {
         const sampleProject1 = new Project('Default');
         const sampleProject2 = new Project('Errands');
@@ -88,10 +98,13 @@ const controller = (() => {
         view.render();
     }
 
-    return { addProject, initializeProjects }
+    const initializeEventListener = () => {
+        const addProjectBtn = document.querySelector('#add-project-btn');
+        addProjectBtn.addEventListener('click', addProject);
+    }
+
+    return { addProject, removeProject, initializeProjects, initializeEventListener }
 })();
 
-const addProjectBtn = document.querySelector('#add-project-btn');
-addProjectBtn.addEventListener('click', controller.addProject);
-
 controller.initializeProjects();
+controller.initializeEventListener();
