@@ -32,6 +32,8 @@ textarea {
 
 .project-edit-input {
     width: 70%;
+    border: none;
+    outline: none;
 }
 
 .project-edit-btn {
