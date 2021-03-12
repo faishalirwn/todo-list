@@ -30,8 +30,23 @@ textarea {
     text-align: left;
 }
 
+.project-edit-input {
+    width: 70%;
+}
+
+.project-edit-btn {
+    position: absolute;
+    top: 3px;
+    right: 47px;
+    font-size: 12px;
+}
+
 .project-remove-btn {
     position: absolute;
     top: 0;
     right: 25px;
+}
+
+.display-none {
+    display: none;
 }
