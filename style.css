@@ -12,6 +12,10 @@ li {
     list-style-type: none;
 }
 
+textarea {
+    resize: none;
+}
+
 #container {
     display: grid;
     grid-template-columns: 268px 1fr 1fr;
