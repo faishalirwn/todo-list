@@ -3,6 +3,8 @@ const projectStorage = (() => {
 
     const getProjects = () => _projects;
 
+    const getProjectByIndex = (index) => _projects[index];
+
     const addProject = (project) => {
         _projects.push(project);
     };
@@ -15,7 +17,7 @@ const projectStorage = (() => {
         _projects[index].changeTitle(title);
     };
     
-    return { addProject, removeProject, updateProject, getProjects }
+    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex }
 })();
 
 class Todo {
@@ -57,37 +59,37 @@ const view = (() => {
         while (projectListEl.firstChild) {            
             projectListEl.removeChild(projectListEl.lastChild);
         }
-        const projects = projectStorage.getProjects()
+        const projects = projectStorage.getProjects();
         projects.forEach((project, index) => {
             const li = document.createElement('li');
-            li.setAttribute('data-index', index);
+            // li.setAttribute('data-index', index);
 
             const titleBtn = document.createElement('button');
             titleBtn.textContent = project.title;
             titleBtn.classList.add('project-title');
+            titleBtn.addEventListener('click', () => {
+                controller.renderTaskList(index);
+            });
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = '✖';
             removeBtn.classList.add('project-remove-btn');
-            removeBtn.addEventListener('click', (e) => {
-                const projectIndex = Number(e.target.parentNode.dataset.index);
-                controller.removeProject(projectIndex);
+            removeBtn.addEventListener('click', () => {
+                controller.removeProject(index);
             });
 
             const editInput = document.createElement('input');
             editInput.setAttribute('type', 'text');
             editInput.classList.add('project-edit-input', 'display-none');
             editInput.addEventListener('keydown', (e) => {
-                const projectIndex = Number(e.target.parentNode.dataset.index);
                 if (e.key === 'Enter' || e.key === 'Escape') {
                     const editInputVal = e.target.value;
-                    controller.updateProject(projectIndex, editInputVal);
+                    controller.updateProject(index, editInputVal);
                 }
             });
             editInput.addEventListener('blur', (e) => {
-                const projectIndex = Number(e.target.parentNode.dataset.index);                
                 const editInputVal = e.target.value;
-                controller.updateProject(projectIndex, editInputVal);
+                controller.updateProject(index, editInputVal);
             });
             
             const editBtn = document.createElement('button');
@@ -110,27 +112,72 @@ const view = (() => {
         });
     };
 
-    const render = () => {
-        renderProjects();        
+    const renderTaskList = (projectIndex) => {
+        const todoListTitleEl = document.querySelector('#todo-list-project-title');
+        const todoInput = document.querySelector('#todo-input');
+        const todoListEl = document.querySelector('#todo-list');
+        
+        const project = projectStorage.getProjectByIndex(projectIndex);
+        
+        todoListTitleEl.textContent = project.title;
+        todoInput.setAttribute('placeholder', `Add todo to "${project.title}"`);
+
+        while (todoListEl.firstChild) {            
+            todoListEl.removeChild(todoListEl.lastChild);
+        }
+        project.todos.forEach((todo) => {
+            const li = document.createElement('li');
+            const button = document.createElement('button');
+            const todoCheckbox = document.createElement('input');
+            const todoTitle = document.createElement('span');
+
+            todoCheckbox.setAttribute('type', 'checkbox');
+            todoCheckbox.checked = todo.completed;
+            
+            todoTitle.textContent = todo.title;
+
+            button.appendChild(todoCheckbox);
+            button.appendChild(todoTitle);
+            li.appendChild(button);
+
+            todoListEl.appendChild(li);
+        })
     }
 
-    return { render }
+    const render = (selectedProjectIndex, selectedTodoIndex) => {
+        renderProjects();        
+        renderTaskList(selectedProjectIndex);
+    }
+
+    return { render, renderProjects, renderTaskList }
 })();
 
 const controller = (() => {
+    let state = {
+        _selectedProject: 0,
+        _selectedTodo: 0,
+    }
+
     const addProject = (project) => {
         projectStorage.addProject(project);
-        view.render();
+        view.renderProjects();
     };
 
     const removeProject = (projectIndex) => {
         projectStorage.removeProject(projectIndex);
-        view.render();
+        if (state._selectedProject === projectIndex) {
+            state._selectedProject = 0;
+        }
+        view.render(state._selectedProject, state._selectedTodo);
     }
 
     const updateProject = (projectIndex, title) => {
         projectStorage.updateProject(projectIndex, title);
-        view.render();
+        view.render(state._selectedProject, state._selectedTodo);
+    }
+
+    const renderTaskList = (projectIndex) => {
+        view.renderTaskList(projectIndex);
     }
 
     const initializeProjects = () => {
@@ -138,7 +185,13 @@ const controller = (() => {
         const sampleProject2 = new Project('Errands');
         projectStorage.addProject(sampleProject1);
         projectStorage.addProject(sampleProject2);
-        view.render();
+
+        const sampleTodo1 = new Todo('Buy drone', 'Now man!', '1/1/1', 1, false);
+        const sampleTodo2 = new Todo('Buy earring', 'Now man!', '1/1/1', 1, true);
+        sampleProject1.addTodo(sampleTodo1);
+        sampleProject2.addTodo(sampleTodo2);
+
+        view.render(state._selectedProject, state._selectedTodo);
     }
 
     const initializeEventListener = () => {
@@ -167,7 +220,7 @@ const controller = (() => {
         });
     }
 
-    return { addProject, removeProject, updateProject, initializeProjects, initializeEventListener }
+    return { addProject, removeProject, updateProject, renderTaskList, initializeProjects, initializeEventListener }
 })();
 
 controller.initializeProjects();
