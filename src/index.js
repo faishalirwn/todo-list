@@ -16,8 +16,12 @@ const projectStorage = (() => {
     const updateProject = (index, title) => {
         _projects[index].changeTitle(title);
     };
+
+    const addTodo = (index, todo) => {
+        _projects[index].addTodo(todo);
+    }
     
-    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex }
+    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex, addTodo }
 })();
 
 class Todo {
@@ -120,7 +124,9 @@ const view = (() => {
         const project = projectStorage.getProjectByIndex(projectIndex);
         
         todoListTitleEl.textContent = project.title;
+        
         todoInput.setAttribute('placeholder', `Add todo to "${project.title}"`);
+        todoInput.value = '';
 
         while (todoListEl.firstChild) {            
             todoListEl.removeChild(todoListEl.lastChild);
@@ -176,7 +182,13 @@ const controller = (() => {
         view.render(state._selectedProject, state._selectedTodo);
     }
 
+    const addTodo = (projectIndex, todo) => {
+        projectStorage.addTodo(projectIndex, todo);
+        view.renderTaskList(projectIndex);
+    }
+
     const renderTaskList = (projectIndex) => {
+        state._selectedProject = projectIndex;
         view.renderTaskList(projectIndex);
     }
 
@@ -195,6 +207,7 @@ const controller = (() => {
     }
 
     const initializeEventListener = () => {
+        // Project sidebar
         const projectTitleInput = document.querySelector('#project-name-input');
 
         const modalBg = document.querySelector('#modal-bg');
@@ -203,7 +216,8 @@ const controller = (() => {
                 modalBg.removeAttribute('style');
                 modalBg.classList.toggle('display-none');
             }
-        })   
+        });
+         
         const addProjectModalBtn = document.querySelector('#add-project-modal-btn');
         addProjectModalBtn.addEventListener('click', () => {
             modalBg.classList.toggle('display-none');
@@ -211,6 +225,7 @@ const controller = (() => {
             projectTitleInput.focus();
             projectTitleInput.select();
         });
+
         const addProjectBtn = document.querySelector('#add-project-btn');
         addProjectBtn.addEventListener('click', () => {
             const newProject = new Project(projectTitleInput.value);
@@ -218,9 +233,19 @@ const controller = (() => {
             modalBg.removeAttribute('style');
             modalBg.classList.toggle('display-none');
         });
+
+        // Task list side
+        const todoInput = document.querySelector('#todo-input');
+        todoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const todoInputVal = e.target.value;
+                const newTodo = new Todo(todoInputVal, '', '', 0, false);
+                addTodo(state._selectedProject, newTodo);
+            }
+        });
     }
 
-    return { addProject, removeProject, updateProject, renderTaskList, initializeProjects, initializeEventListener }
+    return { removeProject, updateProject, renderTaskList, initializeProjects, initializeEventListener }
 })();
 
 controller.initializeProjects();
