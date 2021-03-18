@@ -1,61 +1,6 @@
-const projectStorage = (() => {
-    let _projects = [];
-
-    const getProjects = () => _projects;
-
-    const getProjectByIndex = (index) => _projects[index];
-
-    const addProject = (project) => {
-        _projects.push(project);
-    };
-
-    const removeProject = (index) => {
-        _projects.splice(index, 1);
-    };
-
-    const updateProject = (index, title) => {
-        _projects[index].changeTitle(title);
-    };
-
-    const addTodo = (index, todo) => {
-        _projects[index].addTodo(todo);
-    }
-    
-    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex, addTodo }
-})();
-
-class Todo {
-    constructor(title, desc, due, priority, completed) {
-        this.title = title;
-        this.desc = desc;
-        this.due = due;
-        this.priority = priority;
-        this.completed = completed;
-    }
-
-    toggleCompleted() {
-        this.completed = !this.completed;
-    };
-};
-
-class Project {
-    constructor(title) {
-        this.title = title;
-        this.todos = [];
-    }
-
-    addTodo(todo) {
-        this.todos.push(todo);
-    };
-
-    removeTodo(todoIndex) {
-        this.todos.splice(todoIndex, 1);
-    };
-
-    changeTitle(title) {
-        this.title = title;
-    }
-};
+import projectStorage from "./projectStorage";
+import Todo from "./Todo";
+import Project from "./Project";
 
 const view = (() => {
     const renderProjects = () => {
@@ -185,6 +130,10 @@ const controller = (() => {
     const addTodo = (projectIndex, todo) => {
         projectStorage.addTodo(projectIndex, todo);
         view.renderTaskList(projectIndex);
+    }
+
+    const removeTodo = (projectIndex, todoIndex) => {
+        
     }
 
     const renderTaskList = (projectIndex) => {
