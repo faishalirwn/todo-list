@@ -3,12 +3,12 @@ import Todo from "./Todo";
 import Project from "./Project";
 
 const view = (() => {
-    const renderProjects = () => {
+    const renderProjects = (projects) => {
         const projectListEl = document.querySelector('#project-list');
         while (projectListEl.firstChild) {            
             projectListEl.removeChild(projectListEl.lastChild);
         }
-        const projects = projectStorage.getProjects();
+
         projects.forEach((project, index) => {
             const li = document.createElement('li');
             // li.setAttribute('data-index', index);
@@ -17,7 +17,9 @@ const view = (() => {
             titleBtn.textContent = project.title;
             titleBtn.classList.add('project-title');
             titleBtn.addEventListener('click', () => {
-                controller.renderTaskList(index);
+                controller.changeSelectedProject(index);
+                renderTodoList(project);
+                renderTodoDetail(project.todos[0]);
             });
 
             const removeBtn = document.createElement('button');
@@ -61,12 +63,10 @@ const view = (() => {
         });
     };
 
-    const renderTaskList = (projectIndex) => {
+    const renderTodoList = (project) => {
         const todoListTitleEl = document.querySelector('#todo-list-project-title');
         const todoInput = document.querySelector('#todo-input');
         const todoListEl = document.querySelector('#todo-list');
-        
-        const project = projectStorage.getProjectByIndex(projectIndex);
         
         todoListTitleEl.textContent = project.title;
         
@@ -82,7 +82,11 @@ const view = (() => {
             const todoCheckbox = document.createElement('input');
             const todoTitle = document.createElement('span');
 
-            todoCheckbox.setAttribute('type', 'checkbox');
+            li.addEventListener('click', () => {
+                renderTodoDetail(todo);
+            })
+
+            todoCheckbox.setAttribute('type', 'checkbox');            
             todoCheckbox.checked = todo.completed;
             
             todoTitle.textContent = todo.title;
@@ -95,12 +99,27 @@ const view = (() => {
         })
     }
 
-    const render = (selectedProjectIndex, selectedTodoIndex) => {
-        renderProjects();        
-        renderTaskList(selectedProjectIndex);
+    const renderTodoDetail = (todo) => {
+        const todoDetailStatus = document.querySelector('#todo-detail-status');
+        const todoDetailTitle = document.querySelector('#todo-detail-title');
+        const todoDetailDesc = document.querySelector('#todo-detail-desc');
+        const todoDetailDate = document.querySelector('#todo-detail-date');
+        const todoDetailTime = document.querySelector('#todo-detail-time');        
+
+        todoDetailStatus.checked = todo.completed;
+        todoDetailTitle.value = todo.title;
+        todoDetailDesc.value = todo.desc;
+        // todoDetailDate.value = todo.date;
+        // todoDetailTime.value = todo.time;
     }
 
-    return { render, renderProjects, renderTaskList }
+    const render = (allProjects, project, todo) => {
+        renderProjects(allProjects);
+        renderTodoList(project);
+        renderTodoDetail(todo);
+    }
+
+    return { render, renderProjects, renderTodoList, renderTodoDetail }
 })();
 
 const controller = (() => {
@@ -111,34 +130,43 @@ const controller = (() => {
 
     const addProject = (project) => {
         projectStorage.addProject(project);
-        view.renderProjects();
-    };
+        const projects = projectStorage.getProjects();
+        view.renderProjects(projects);
+    }
 
     const removeProject = (projectIndex) => {
         projectStorage.removeProject(projectIndex);
+        const projects = projectStorage.getProjects();
         if (state._selectedProject === projectIndex) {
             state._selectedProject = 0;
+            const project = projectStorage.getProjectByIndex(state._selectedProject);
+            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            view.render(projects, project, todo);
+        } else {
+            view.renderProjects(projects);
         }
-        view.render(state._selectedProject, state._selectedTodo);
     }
 
     const updateProject = (projectIndex, title) => {
         projectStorage.updateProject(projectIndex, title);
-        view.render(state._selectedProject, state._selectedTodo);
+        const projects = projectStorage.getProjects();
+        const project = projectStorage.getProjectByIndex(state._selectedProject);
+        const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+        view.render(projects, project, todo);
     }
 
-    const addTodo = (projectIndex, todo) => {
-        projectStorage.addTodo(projectIndex, todo);
-        view.renderTaskList(projectIndex);
+    const addTodo = (todo) => {
+        projectStorage.addTodo(state._selectedProject, todo);
+        const project = projectStorage.getProjectByIndex(state._selectedProject);
+        view.renderTodoList(project);
     }
 
     const removeTodo = (projectIndex, todoIndex) => {
         
     }
 
-    const renderTaskList = (projectIndex) => {
+    const changeSelectedProject = (projectIndex) => {
         state._selectedProject = projectIndex;
-        view.renderTaskList(projectIndex);
     }
 
     const initializeProjects = () => {
@@ -147,12 +175,15 @@ const controller = (() => {
         projectStorage.addProject(sampleProject1);
         projectStorage.addProject(sampleProject2);
 
-        const sampleTodo1 = new Todo('Buy drone', 'Now man!', '1/1/1', 1, false);
-        const sampleTodo2 = new Todo('Buy earring', 'Now man!', '1/1/1', 1, true);
+        const sampleTodo1 = new Todo('Buy drone', 'Now man!', '1/1/1', false);
+        const sampleTodo2 = new Todo('Buy earring', 'Now man!', '1/1/1', true);
         sampleProject1.addTodo(sampleTodo1);
         sampleProject2.addTodo(sampleTodo2);
 
-        view.render(state._selectedProject, state._selectedTodo);
+        const projects = projectStorage.getProjects();
+        const project = projectStorage.getProjectByIndex(state._selectedProject);
+        const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+        view.render(projects, project, todo);
     }
 
     const initializeEventListener = () => {
@@ -183,18 +214,18 @@ const controller = (() => {
             modalBg.classList.toggle('display-none');
         });
 
-        // Task list side
+        // Todo list side
         const todoInput = document.querySelector('#todo-input');
         todoInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const todoInputVal = e.target.value;
-                const newTodo = new Todo(todoInputVal, '', '', 0, false);
-                addTodo(state._selectedProject, newTodo);
+                const newTodo = new Todo(todoInputVal, '', '', false);
+                addTodo(newTodo);
             }
         });
     }
 
-    return { removeProject, updateProject, renderTaskList, initializeProjects, initializeEventListener }
+    return { removeProject, updateProject, changeSelectedProject, initializeProjects, initializeEventListener }
 })();
 
 controller.initializeProjects();
