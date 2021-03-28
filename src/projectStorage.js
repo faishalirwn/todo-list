@@ -5,6 +5,10 @@ const projectStorage = (() => {
 
     const getProjectByIndex = (index) => _projects[index];
 
+    const getTodos = (projectIndex) => _projects[projectIndex].todos;
+
+    const getTodoByIndex = (projectIndex, todoIndex) => _projects[projectIndex].todos[todoIndex];
+
     const addProject = (project) => {
         _projects.push(project);
     };
@@ -21,7 +25,7 @@ const projectStorage = (() => {
         _projects[index].addTodo(todo);
     }
     
-    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex, addTodo }
+    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex, addTodo, getTodos, getTodoByIndex }
 })();
 
 export default projectStorage;
