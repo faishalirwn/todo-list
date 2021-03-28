@@ -88,6 +88,10 @@ const view = (() => {
 
             todoCheckbox.setAttribute('type', 'checkbox');            
             todoCheckbox.checked = todo.completed;
+            todoCheckbox.addEventListener('change', () => {
+                todo.toggleCompleted();
+                renderTodoDetail(project, todo);
+            })
             
             todoTitle.textContent = todo.title;
 
