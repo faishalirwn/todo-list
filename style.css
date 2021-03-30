@@ -53,6 +53,10 @@ textarea {
     display: none;
 }
 
+.visibility-hidden {
+    visibility: hidden;
+}
+
 #modal-bg {
     position: fixed;
     top: 0;
