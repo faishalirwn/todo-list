@@ -19,7 +19,14 @@ const view = (() => {
             titleBtn.addEventListener('click', () => {
                 controller.changeSelectedProject(index);
                 renderTodoList(project);
-                renderTodoDetail(project.todos[0]);
+                if (project.todos.length === 0) {
+                    const todoDetailSide = document.querySelector('#todo-detail');
+                    todoDetailSide.classList.add('visibility-hidden');
+                    controller.changeSelectedTodo(-1);
+                } else {
+                    controller.changeSelectedTodo(0);
+                    renderTodoDetail(project.todos[0]);
+                }
             });
 
             const removeBtn = document.createElement('button');
@@ -105,12 +112,14 @@ const view = (() => {
     }
 
     const renderTodoDetail = (todo) => {
+        const todoDetailSide = document.querySelector('#todo-detail');
         const todoDetailStatus = document.querySelector('#todo-detail-status');
         const todoDetailTitle = document.querySelector('#todo-detail-title');
         const todoDetailDesc = document.querySelector('#todo-detail-desc');
         const todoDetailDate = document.querySelector('#todo-detail-date');
         const todoDetailTime = document.querySelector('#todo-detail-time');
 
+        todoDetailSide.classList.remove('visibility-hidden');
         todoDetailStatus.checked = todo.completed;        
         todoDetailTitle.value = todo.title;        
         todoDetailDesc.value = todo.desc;        
@@ -163,11 +172,28 @@ const controller = (() => {
     const addTodo = (todo) => {
         projectStorage.addTodo(state._selectedProject, todo);
         const project = projectStorage.getProjectByIndex(state._selectedProject);
+        if (state._selectedTodo === -1) {
+            changeSelectedTodo(0)
+        }
         view.renderTodoList(project);
+        view.renderTodoDetail(todo);
     }
 
-    const removeTodo = (projectIndex, todoIndex) => {
-        
+    const removeTodo = () => {
+        const todoDetailSide = document.querySelector('#todo-detail');
+        const projects = projectStorage.getProjects();
+        const project = projectStorage.getProjectByIndex(state._selectedProject);
+        const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);            
+        project.removeTodo(state._selectedTodo);
+        if (project.todos.length === 0) {
+            todoDetailSide.classList.add('visibility-hidden');
+            view.renderProjects(projects);
+            view.renderTodoList(project);
+        } else {
+            changeSelectedTodo(state._selectedTodo - 1);
+            view.renderTodoDetail(todo);
+            view.renderTodoList(project);
+        }
     }
 
     const changeSelectedProject = (projectIndex) => {
@@ -234,12 +260,13 @@ const controller = (() => {
             }
         });
 
-        // Todo detail side
+        // Todo detail side        
         const todoDetailStatus = document.querySelector('#todo-detail-status');
         const todoDetailTitle = document.querySelector('#todo-detail-title');
         const todoDetailDesc = document.querySelector('#todo-detail-desc');
         const todoDetailDate = document.querySelector('#todo-detail-date');
         const todoDetailTime = document.querySelector('#todo-detail-time');
+        const todoDeleteBtn = document.querySelector('#todo-delete-btn');
 
         todoDetailStatus.addEventListener('change', () => {
             const project = projectStorage.getProjectByIndex(state._selectedProject);
@@ -248,7 +275,7 @@ const controller = (() => {
             view.renderTodoList(project);
         });
 
-        todoDetailTitle.addEventListener('keypress', () => {
+        todoDetailTitle.addEventListener('change', () => {
             const project = projectStorage.getProjectByIndex(state._selectedProject);
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
             todo.title = todoDetailTitle.value;
@@ -268,6 +295,10 @@ const controller = (() => {
         todoDetailTime.addEventListener('change', () => {
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
             todo.time = todoDetailTime.value;
+        });
+
+        todoDeleteBtn.addEventListener('click', () => {
+            removeTodo()
         });
     }
 
