@@ -19,7 +19,7 @@ const view = (() => {
             titleBtn.addEventListener('click', () => {
                 controller.changeSelectedProject(index);
                 renderTodoList(project);
-                renderTodoDetail(project, project.todos[0]);
+                renderTodoDetail(project.todos[0]);
             });
 
             const removeBtn = document.createElement('button');
@@ -83,14 +83,14 @@ const view = (() => {
             const todoTitle = document.createElement('span');
 
             li.addEventListener('click', () => {
-                renderTodoDetail(project, todo);
+                renderTodoDetail(todo);
             })
 
             todoCheckbox.setAttribute('type', 'checkbox');            
             todoCheckbox.checked = todo.completed;
             todoCheckbox.addEventListener('change', () => {
                 todo.toggleCompleted();
-                renderTodoDetail(project, todo);
+                renderTodoDetail(todo);
             })
             
             todoTitle.textContent = todo.title;
@@ -103,41 +103,24 @@ const view = (() => {
         })
     }
 
-    const renderTodoDetail = (project, todo) => {
+    const renderTodoDetail = (todo) => {
         const todoDetailStatus = document.querySelector('#todo-detail-status');
         const todoDetailTitle = document.querySelector('#todo-detail-title');
         const todoDetailDesc = document.querySelector('#todo-detail-desc');
         const todoDetailDate = document.querySelector('#todo-detail-date');
-        const todoDetailTime = document.querySelector('#todo-detail-time');        
+        const todoDetailTime = document.querySelector('#todo-detail-time');
 
-        todoDetailStatus.checked = todo.completed;
-        todoDetailStatus.addEventListener('change', () => {
-            todo.toggleCompleted();
-            renderTodoList(project);
-        })
-        todoDetailTitle.value = todo.title;
-        todoDetailTitle.addEventListener('keypress', () => {
-            todo.title = todoDetailTitle.value;
-            renderTodoList(project);
-        })
-        todoDetailDesc.value = todo.desc;
-        todoDetailDesc.addEventListener('keypress', () => {
-            todo.desc = todoDetailDesc.value;
-        })
-        todoDetailDate.value = todo.date;
-        todoDetailDate.addEventListener('change', () => {
-            todo.date = todoDetailDate.value;
-        })
-        todoDetailTime.value = todo.time;
-        todoDetailTime.addEventListener('change', () => {
-            todo.time = todoDetailTime.value;
-        })
+        todoDetailStatus.checked = todo.completed;        
+        todoDetailTitle.value = todo.title;        
+        todoDetailDesc.value = todo.desc;        
+        todoDetailDate.value = todo.date;        
+        todoDetailTime.value = todo.time;        
     }
 
     const render = (allProjects, project, todo) => {
         renderProjects(allProjects);
         renderTodoList(project);
-        renderTodoDetail(project, todo);
+        renderTodoDetail(todo);
     }
 
     return { render, renderProjects, renderTodoList, renderTodoDetail }
@@ -244,6 +227,42 @@ const controller = (() => {
                 const newTodo = new Todo(todoInputVal, '', '', '', false);
                 addTodo(newTodo);
             }
+        });
+
+        // Todo detail side
+        const todoDetailStatus = document.querySelector('#todo-detail-status');
+        const todoDetailTitle = document.querySelector('#todo-detail-title');
+        const todoDetailDesc = document.querySelector('#todo-detail-desc');
+        const todoDetailDate = document.querySelector('#todo-detail-date');
+        const todoDetailTime = document.querySelector('#todo-detail-time');
+
+        todoDetailStatus.addEventListener('change', () => {
+            const project = projectStorage.getProjectByIndex(state._selectedProject);
+            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            todo.toggleCompleted();
+            view.renderTodoList(project);
+        });
+
+        todoDetailTitle.addEventListener('keypress', () => {
+            const project = projectStorage.getProjectByIndex(state._selectedProject);
+            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            todo.title = todoDetailTitle.value;
+            view.renderTodoList(project);
+        });
+
+        todoDetailDesc.addEventListener('keypress', () => {
+            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            todo.desc = todoDetailDesc.value;
+        });
+
+        todoDetailDate.addEventListener('change', () => {
+            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            todo.date = todoDetailDate.value;
+        });
+
+        todoDetailTime.addEventListener('change', () => {
+            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            todo.time = todoDetailTime.value;
         });
     }
 
