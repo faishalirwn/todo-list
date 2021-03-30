@@ -11,7 +11,7 @@ const view = (() => {
 
         projects.forEach((project, index) => {
             const li = document.createElement('li');
-            // li.setAttribute('data-index', index);
+            // li.setAttribute('data-index', index);            
 
             const titleBtn = document.createElement('button');
             titleBtn.textContent = project.title;
@@ -76,13 +76,14 @@ const view = (() => {
         while (todoListEl.firstChild) {            
             todoListEl.removeChild(todoListEl.lastChild);
         }
-        project.todos.forEach((todo) => {
+        project.todos.forEach((todo, todoIndex) => {
             const li = document.createElement('li');
             const button = document.createElement('button');
             const todoCheckbox = document.createElement('input');
             const todoTitle = document.createElement('span');
 
             li.addEventListener('click', () => {
+                controller.changeSelectedTodo(todoIndex);
                 renderTodoDetail(todo);
             })
 
@@ -171,6 +172,10 @@ const controller = (() => {
 
     const changeSelectedProject = (projectIndex) => {
         state._selectedProject = projectIndex;
+    }
+
+    const changeSelectedTodo = (todoIndex) => {
+        state._selectedTodo = todoIndex;
     }
 
     const initializeProjects = () => {
@@ -266,7 +271,7 @@ const controller = (() => {
         });
     }
 
-    return { removeProject, updateProject, changeSelectedProject, initializeProjects, initializeEventListener }
+    return { removeProject, updateProject, changeSelectedProject, changeSelectedTodo, initializeProjects, initializeEventListener }
 })();
 
 controller.initializeProjects();
