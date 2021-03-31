@@ -160,10 +160,20 @@ const controller = (() => {
     }
 
     const removeProject = (projectIndex) => {
-        projectStorage.removeProject(projectIndex);
-        const projects = projectStorage.getProjects();
-        if (state._selectedProject === projectIndex) {
+        projectStorage.removeProject(projectIndex);        
+        const projects = projectStorage.getProjects();        
+        if (projects.length === 0) {
+            state._selectedProject = -1;
+            state._selectedTodo = -1;
+            const todoListSide = document.querySelector('#todo-list-container');
+            todoListSide.classList.add('visibility-hidden');
+            const todoDetailSide = document.querySelector('#todo-detail');
+            todoDetailSide.classList.add('visibility-hidden');
+            view.renderProjects(projects);
+        }
+        else if (state._selectedProject === projectIndex) {
             state._selectedProject = 0;
+            state._selectedTodo = 0;
             const project = projectStorage.getProjectByIndex(state._selectedProject);
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
             view.render(projects, project, todo);
@@ -199,6 +209,7 @@ const controller = (() => {
         const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);            
         project.removeTodo(state._selectedTodo);
         if (project.todos.length === 0) {
+            state._selectedTodo = -1;
             todoDetailSide.classList.add('visibility-hidden');
             view.renderProjects(projects);
             view.renderTodoList(project);
