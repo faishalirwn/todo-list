@@ -74,6 +74,7 @@ const view = (() => {
         const todoListTitleEl = document.querySelector('#todo-list-project-title');
         const todoInput = document.querySelector('#todo-input');
         const todoListEl = document.querySelector('#todo-list');
+        const todoListCompletedEl = document.querySelector('#todo-list-completed');
         
         todoListTitleEl.textContent = project.title;
         
@@ -81,8 +82,13 @@ const view = (() => {
         todoInput.value = '';
 
         while (todoListEl.firstChild) {            
-            todoListEl.removeChild(todoListEl.lastChild);
+            todoListEl.removeChild(todoListEl.lastChild);            
         }
+
+        while (todoListCompletedEl.firstChild) {            
+            todoListCompletedEl.removeChild(todoListCompletedEl.lastChild);            
+        }
+
         project.todos.forEach((todo, todoIndex) => {
             const li = document.createElement('li');
             const button = document.createElement('button');
@@ -99,6 +105,7 @@ const view = (() => {
             todoCheckbox.addEventListener('change', () => {
                 todo.toggleCompleted();
                 renderTodoDetail(todo);
+                renderTodoList(project);
             })
             
             todoTitle.textContent = todo.title;
@@ -107,7 +114,11 @@ const view = (() => {
             button.appendChild(todoTitle);
             li.appendChild(button);
 
-            todoListEl.appendChild(li);
+            if (todoCheckbox.checked) {
+                todoListCompletedEl.appendChild(li);
+            } else {                
+                todoListEl.appendChild(li);
+            }
         })
     }
 
