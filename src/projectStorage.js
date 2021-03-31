@@ -20,12 +20,8 @@ const projectStorage = (() => {
     const updateProject = (index, title) => {
         _projects[index].changeTitle(title);
     };
-
-    const addTodo = (index, todo) => {
-        _projects[index].addTodo(todo);
-    }
     
-    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex, addTodo, getTodos, getTodoByIndex }
+    return { addProject, removeProject, updateProject, getProjects, getProjectByIndex, getTodos, getTodoByIndex }
 })();
 
 export default projectStorage;

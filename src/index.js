@@ -170,10 +170,12 @@ const controller = (() => {
     }
 
     const addTodo = (todo) => {
-        projectStorage.addTodo(state._selectedProject, todo);
         const project = projectStorage.getProjectByIndex(state._selectedProject);
+        project.addTodo(todo);
         if (state._selectedTodo === -1) {
-            changeSelectedTodo(0)
+            state._selectedTodo = 0;
+        } else {
+            state._selectedTodo = project.todos.length - 1;
         }
         view.renderTodoList(project);
         view.renderTodoDetail(todo);
@@ -190,7 +192,7 @@ const controller = (() => {
             view.renderProjects(projects);
             view.renderTodoList(project);
         } else {
-            changeSelectedTodo(state._selectedTodo - 1);
+            state._selectedTodo = state._selectedTodo - 1;
             view.renderTodoDetail(todo);
             view.renderTodoList(project);
         }
