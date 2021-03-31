@@ -163,6 +163,8 @@ const controller = (() => {
         todoListSide.classList.remove('visibility-hidden');
         const todoDetailSide = document.querySelector('#todo-detail');
         todoDetailSide.classList.add('visibility-hidden');
+        const todoInput = document.querySelector('#todo-input');
+        todoInput.focus();
         
         view.renderProjects(projects)        
         view.renderTodoList(project);
