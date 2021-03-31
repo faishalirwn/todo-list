@@ -154,9 +154,18 @@ const controller = (() => {
     }
 
     const addProject = (project) => {
-        projectStorage.addProject(project);
         const projects = projectStorage.getProjects();
-        view.renderProjects(projects);
+        projectStorage.addProject(project);
+
+        state._selectedTodo = 0;
+        state._selectedProject = projects.length - 1;
+        const todoListSide = document.querySelector('#todo-list-container');
+        todoListSide.classList.remove('visibility-hidden');
+        const todoDetailSide = document.querySelector('#todo-detail');
+        todoDetailSide.classList.add('visibility-hidden');
+        
+        view.renderProjects(projects)        
+        view.renderTodoList(project);
     }
 
     const removeProject = (projectIndex) => {
@@ -264,6 +273,15 @@ const controller = (() => {
             modalBg.style.display = 'flex';
             projectTitleInput.focus();
             projectTitleInput.select();
+        });
+
+        projectTitleInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const newProject = new Project(projectTitleInput.value);
+                addProject(newProject);
+                modalBg.removeAttribute('style');
+                modalBg.classList.toggle('display-none');                
+            }
         });
 
         const addProjectBtn = document.querySelector('#add-project-btn');
