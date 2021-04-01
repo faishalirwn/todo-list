@@ -79,3 +79,18 @@ textarea {
 #add-project-modal h1 {
     margin: 0 0 30px 0;
 }
+
+#todo-toolbar {
+    display: flex;
+}
+
+#todo-project {
+    position: relative;
+}
+
+#todo-project-dropdown {
+    /* display: none; */
+    background-color: grey;
+    position: absolute;
+    bottom: 0;
+}
