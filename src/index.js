@@ -95,8 +95,11 @@ const view = (() => {
         }
 
         const sortedTodos = project.todos.slice().sort((a, b) => {
-            const aDate = parse(a.date, 'yyyy-MM-dd', new Date());
-            const bDate = parse(b.date, 'yyyy-MM-dd', new Date());
+            const aDate = parse(`${a.date} ${a.time}`, 'yyyy-MM-dd HH:mm', new Date());
+            const bDate = parse(`${b.date} ${b.time}`, 'yyyy-MM-dd HH:mm', new Date());
+            console.log(`${a.date} ${a.time} | ${aDate}`);
+            console.log(`${b.date} ${b.time} | ${bDate}`);
+            console.log(compareAsc(aDate, bDate));
             return compareAsc(aDate, bDate);
         });
 
@@ -151,7 +154,7 @@ const view = (() => {
         todoDetailStatus.checked = todo.completed;        
         todoDetailTitle.value = todo.title;   
         todoDetailDesc.value = todo.desc;
-        todoDetailDate.value = todo.date;        
+        todoDetailDate.value = todo.date;
         todoDetailTime.value = todo.time;
         todoProjectCurrentText.textContent = project.title;
 
@@ -378,13 +381,23 @@ const controller = (() => {
 
         todoDetailDate.addEventListener('change', () => {
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            const date = new Date();
             todo.date = todoDetailDate.value;
+            if (todo.time === '') {
+                todo.time = '00:00';
+                view.renderTodoDetail();
+            }
             view.renderTodoList();
         });
 
         todoDetailTime.addEventListener('change', () => {
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            const date = new Date();
             todo.time = todoDetailTime.value;
+            if (todo.date === '') {
+                todo.date = `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
+                view.renderTodoDetail();
+            }
             view.renderTodoList();
         });
 
