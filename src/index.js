@@ -1,7 +1,7 @@
 import projectStorage from "./projectStorage";
 import Todo from "./Todo";
 import Project from "./Project";
-import { parse, compareAsc } from "date-fns";
+import { parse, compareAsc, isToday, format, fromUnixTime } from "date-fns";
 
 const view = (() => {
     const renderProjects = () => {
@@ -97,18 +97,18 @@ const view = (() => {
         const sortedTodos = project.todos.slice().sort((a, b) => {
             const aDate = parse(`${a.date} ${a.time}`, 'yyyy-MM-dd HH:mm', new Date());
             const bDate = parse(`${b.date} ${b.time}`, 'yyyy-MM-dd HH:mm', new Date());
-            console.log(`${a.date} ${a.time} | ${aDate}`);
-            console.log(`${b.date} ${b.time} | ${bDate}`);
-            console.log(compareAsc(aDate, bDate));
             return compareAsc(aDate, bDate);
         });
 
         sortedTodos.forEach((todo, todoIndex) => {
             const li = document.createElement('li');
             const button = document.createElement('button');
+            const div = document.createElement('div');
             const todoCheckbox = document.createElement('input');
             const todoTitle = document.createElement('span');
+            const todoDateTimeEl = document.createElement('span');
 
+            button.classList.add('todo-item');
             button.addEventListener('click', () => {
                 controller.changeSelectedTodo(todoIndex);
                 renderTodoDetail(todo);
@@ -124,8 +124,13 @@ const view = (() => {
             
             todoTitle.textContent = todo.title;
 
-            button.appendChild(todoCheckbox);
-            button.appendChild(todoTitle);
+            const todoDate = parse(`${todo.date} ${todo.time}`, 'yyyy-MM-dd HH:mm', new Date());
+            todoDateTimeEl.textContent = isToday(todoDate) ? todo.time : format(todoDate, 'MMM dd');
+
+            div.appendChild(todoCheckbox);
+            div.appendChild(todoTitle);
+            button.appendChild(div);
+            button.appendChild(todoDateTimeEl);
             li.appendChild(button);
 
             if (todoCheckbox.checked) {
@@ -297,8 +302,10 @@ const controller = (() => {
         projectStorage.addProject(sampleProject1);
         projectStorage.addProject(sampleProject2);
 
-        const sampleTodo1 = new Todo('Buy drone', 'Now man!', '', '', false, 0);
-        const sampleTodo2 = new Todo('Buy earring', 'Now man!', '', '', true, 1);
+        const timeElapsed = Date.now();
+        const dateNow = new Date(timeElapsed);
+        const sampleTodo1 = new Todo('Buy drone', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 0);
+        const sampleTodo2 = new Todo('Buy earring', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1);
         sampleProject1.addTodo(sampleTodo1);
         sampleProject2.addTodo(sampleTodo2);        
         
@@ -347,7 +354,9 @@ const controller = (() => {
         todoInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const todoInputVal = e.target.value;
-                const newTodo = new Todo(todoInputVal, '', '', '', false, state._selectedProject);
+                const timeElapsed = Date.now();
+                const dateNow = new Date(timeElapsed);
+                const newTodo = new Todo(todoInputVal, '', format(dateNow, 'yyyy-MM-dd'), '00:00', false, state._selectedProject);
                 addTodo(newTodo);
             }
         });
@@ -381,7 +390,6 @@ const controller = (() => {
 
         todoDetailDate.addEventListener('change', () => {
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
-            const date = new Date();
             todo.date = todoDetailDate.value;
             if (todo.time === '') {
                 todo.time = '00:00';
@@ -392,10 +400,12 @@ const controller = (() => {
 
         todoDetailTime.addEventListener('change', () => {
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
-            const date = new Date();
             todo.time = todoDetailTime.value;
             if (todo.date === '') {
-                todo.date = `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
+                const timeElapsed = Date.now();
+                const dateNow = new Date(timeElapsed);
+                // todo.date = `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
+                todo.date = format(dateNow, 'yyyy-MM-dd');
                 view.renderTodoDetail();
             }
             view.renderTodoList();
