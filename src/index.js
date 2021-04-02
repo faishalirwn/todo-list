@@ -416,7 +416,9 @@ const controller = (() => {
         });
 
         todoProjectCurrentBtn.addEventListener('click', () => {
-            todoProjectDropdown.classList.toggle('display-none');
+            if (todoProjectDropdown.firstChild) {
+                todoProjectDropdown.classList.toggle('display-none');
+            }
         });
     }
 
