@@ -1,7 +1,7 @@
 import projectStorage from "./projectStorage";
 import Todo from "./Todo";
 import Project from "./Project";
-import { parse, compareAsc, isToday, format, fromUnixTime } from "date-fns";
+import { parse, compareAsc, isToday, format } from "date-fns";
 
 const view = (() => {
     const renderProjects = () => {
@@ -14,7 +14,6 @@ const view = (() => {
 
         projects.forEach((project, index) => {
             const li = document.createElement('li');
-            // li.setAttribute('data-index', index);            
 
             const titleBtn = document.createElement('button');
             titleBtn.textContent = project.title;
@@ -231,6 +230,7 @@ const controller = (() => {
     const removeProject = (projectIndex) => {
         projectStorage.removeProject(projectIndex);        
    
+        const projects = projectStorage.getProjects();
         if (projects.length === 0) {
             state._selectedProject = -1;
             state._selectedTodo = -1;
