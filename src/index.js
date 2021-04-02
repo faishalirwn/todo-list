@@ -138,14 +138,8 @@ const view = (() => {
         const todoProjectDropdown = document.querySelector('#todo-project-dropdown');
         
         const projects = projectStorage.getProjects();        
-        let project, todo;
-        if (todoDetailSide.getAttribute('data-projectIndex') !== null && todoDetailSide.getAttribute('data-todoIndex') !== null) {
-            todo = projectStorage.getTodoByIndex(todoDetailSide.getAttribute('data-projectIndex'), todoDetailSide.getAttribute('data-todoIndex'));
-            project = projectStorage.getProjectByIndex(todoDetailSide.getAttribute('data-projectIndex'));
-        } else {
-            todo = projectStorage.getTodoByIndex(controller.getSelectedProject(), controller.getSelectedTodo());
-            project = projectStorage.getProjectByIndex(controller.getSelectedProject());
-        }
+        const project = projectStorage.getProjectByIndex(controller.getSelectedProject());        
+        const todo = projectStorage.getTodoByIndex(controller.getSelectedProject(), controller.getSelectedTodo());
 
         todoDetailSide.classList.remove('visibility-hidden');
         todoDetailStatus.checked = todo.completed;        
@@ -172,19 +166,15 @@ const view = (() => {
                     todo.projectIndex = projectIndex;
                     const todosProject = projectStorage.getProjectByIndex(projectIndex);
                     todosProject.addTodo(todo);
-
-                    renderTodoList();
-
+                    
                     todoProjectDropdown.classList.add('display-none');
                     todoProjectCurrentText.textContent = todosProject.title;
 
-                    todoDetailSide.setAttribute('data-projectindex', projectIndex);
-                    todoDetailSide.setAttribute('data-todoindex', todosProject.todos.length - 1);
-
+                    controller.changeSelectedProject(projectIndex);
+                    controller.changeSelectedTodo(todosProject.todos.length - 1);
+                    
+                    renderTodoList();
                     renderTodoDetail();
-
-                    todoDetailSide.removeAttribute('data-projectindex');
-                    todoDetailSide.removeAttribute('data-todoindex');
                 });
 
                 todoProjectDropdown.append(li);
