@@ -89,7 +89,6 @@ textarea {
 }
 
 #todo-project-dropdown {
-    /* display: none; */
     background-color: grey;
     position: absolute;
     bottom: 0;
