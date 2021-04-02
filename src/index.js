@@ -200,6 +200,7 @@ const controller = (() => {
     const addProject = (project) => {        
         projectStorage.addProject(project);
 
+        const projects = projectStorage.getProjects();
         state._selectedTodo = 0;
         state._selectedProject = projects.length - 1;
         const todoListSide = document.querySelector('#todo-list-container');
@@ -255,6 +256,7 @@ const controller = (() => {
     const removeTodo = () => {
         const todoDetailSide = document.querySelector('#todo-detail');
                 
+        const project = projectStorage.getProjectByIndex(controller.getSelectedProject());
         project.removeTodo(state._selectedTodo);
         if (project.todos.length === 0) {
             state._selectedTodo = -1;
