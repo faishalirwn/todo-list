@@ -1,6 +1,7 @@
 import projectStorage from "./projectStorage";
 import Todo from "./Todo";
 import Project from "./Project";
+import { parse, compareAsc } from "date-fns";
 
 const view = (() => {
     const renderProjects = () => {
@@ -93,7 +94,13 @@ const view = (() => {
             todoListCompletedEl.removeChild(todoListCompletedEl.lastChild);            
         }
 
-        project.todos.forEach((todo, todoIndex) => {
+        const sortedTodos = project.todos.slice().sort((a, b) => {
+            const aDate = parse(a.date, 'yyyy-MM-dd', new Date());
+            const bDate = parse(b.date, 'yyyy-MM-dd', new Date());
+            return compareAsc(aDate, bDate);
+        });
+
+        sortedTodos.forEach((todo, todoIndex) => {
             const li = document.createElement('li');
             const button = document.createElement('button');
             const todoCheckbox = document.createElement('input');
@@ -133,7 +140,6 @@ const view = (() => {
         const todoDetailDesc = document.querySelector('#todo-detail-desc');
         const todoDetailDate = document.querySelector('#todo-detail-date');
         const todoDetailTime = document.querySelector('#todo-detail-time');
-        const todoProjectCurrentBtn = document.querySelector('#todo-project-current');
         const todoProjectCurrentText = document.querySelector('#todo-project-current span');
         const todoProjectDropdown = document.querySelector('#todo-project-dropdown');
         
@@ -373,11 +379,13 @@ const controller = (() => {
         todoDetailDate.addEventListener('change', () => {
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
             todo.date = todoDetailDate.value;
+            view.renderTodoList();
         });
 
         todoDetailTime.addEventListener('change', () => {
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
             todo.time = todoDetailTime.value;
+            view.renderTodoList();
         });
 
         todoDeleteBtn.addEventListener('click', () => {
