@@ -85,11 +85,11 @@ const view = (() => {
         todoInput.setAttribute('placeholder', `Add todo to "${project.title}"`);
         todoInput.value = '';
 
-        while (todoListEl.firstChild) {            
+        while (todoListEl.firstChild) {
             todoListEl.removeChild(todoListEl.lastChild);            
         }
 
-        while (todoListCompletedEl.firstChild) {            
+        while (todoListCompletedEl.firstChild) {
             todoListCompletedEl.removeChild(todoListCompletedEl.lastChild);            
         }
 
@@ -99,7 +99,7 @@ const view = (() => {
             return compareAsc(aDate, bDate);
         });
 
-        sortedTodos.forEach((todo, todoIndex) => {
+        sortedTodos.forEach((todo) => {
             const li = document.createElement('li');
             const button = document.createElement('button');
             const div = document.createElement('div');
@@ -109,9 +109,9 @@ const view = (() => {
 
             button.classList.add('todo-item');
             button.addEventListener('click', () => {
-                controller.changeSelectedTodo(todoIndex);
+                controller.changeSelectedTodo(todo.index);
                 renderTodoDetail(todo);
-            })
+            });
 
             todoCheckbox.setAttribute('type', 'checkbox');            
             todoCheckbox.checked = todo.completed;
@@ -119,7 +119,7 @@ const view = (() => {
                 todo.toggleCompleted();
                 renderTodoDetail(todo);
                 renderTodoList(project);
-            })
+            });
             
             todoTitle.textContent = todo.title;
 
@@ -327,8 +327,8 @@ const controller = (() => {
 
         const timeElapsed = Date.now();
         const dateNow = new Date(timeElapsed);
-        const sampleTodo1 = new Todo('Buy drone', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 0);
-        const sampleTodo2 = new Todo('Buy earring', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1);
+        const sampleTodo1 = new Todo('Buy drone', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 0, 0);
+        const sampleTodo2 = new Todo('Buy earring', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1, 0);
         sampleProject1.addTodo(sampleTodo1);
         sampleProject2.addTodo(sampleTodo2);        
 
@@ -380,9 +380,13 @@ const controller = (() => {
         todoInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const todoInputVal = e.target.value;
+
                 const timeElapsed = Date.now();
                 const dateNow = new Date(timeElapsed);
-                const newTodo = new Todo(todoInputVal, '', format(dateNow, 'yyyy-MM-dd'), '00:00', false, state._selectedProject);
+
+                const project = projectStorage.getProjectByIndex(controller.getSelectedProject());
+
+                const newTodo = new Todo(todoInputVal, '', format(dateNow, 'yyyy-MM-dd'), '00:00', false, state._selectedProject, project.todos.length);
                 addTodo(newTodo);
             }
         });
@@ -438,16 +442,14 @@ const controller = (() => {
 
 
 if (!localStorage.getItem('projects')) {
-    alert('ha');
     controller.initializeProjects();
 } else {
-    alert('hu');
     const projectsLocalStorage = JSON.parse(localStorage.getItem('projects'));
     projectsLocalStorage.forEach((project) => {
         const newProject = new Project(project.title);
         projectStorage.addProject(newProject)
         project.todos.forEach((todo) => {
-            const newTodo = new Todo(todo.title, todo.desc, todo.date, todo.time, todo.completed, todo.projectIndex);
+            const newTodo = new Todo(todo.title, todo.desc, todo.date, todo.time, todo.completed, todo.projectIndex, todo.index);
             newProject.addTodo(newTodo);
         });
     });
