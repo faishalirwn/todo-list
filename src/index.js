@@ -400,7 +400,8 @@ const controller = (() => {
                 const newProject = new Project(projectTitleInput.value);
                 addProject(newProject);
                 modalBg.removeAttribute('style');
-                modalBg.classList.toggle('display-none');                
+                modalBg.classList.toggle('display-none');
+                projectTitleInput.value = '';
             }
         });
 
@@ -410,6 +411,7 @@ const controller = (() => {
             addProject(newProject);
             modalBg.removeAttribute('style');
             modalBg.classList.toggle('display-none');
+            projectTitleInput.value = '';
         });
 
         // Todo list side
@@ -420,8 +422,6 @@ const controller = (() => {
 
                 const timeElapsed = Date.now();
                 const dateNow = new Date(timeElapsed);
-
-                const project = projectStorage.getProjectByIndex(controller.getSelectedProject());
 
                 const newTodo = new Todo(todoInputVal, '', format(dateNow, 'yyyy-MM-dd'), '00:00', false, state._selectedProject);
                 addTodo(newTodo);
