@@ -16,6 +16,7 @@ const view = (() => {
             const li = document.createElement('li');
 
             const titleBtn = document.createElement('button');
+            titleBtn.setAttribute('data-index', index);
             titleBtn.textContent = project.title;
             titleBtn.classList.add('project-title');
             titleBtn.addEventListener('click', () => {
@@ -27,9 +28,24 @@ const view = (() => {
                     controller.changeSelectedTodo(-1);
                 } else {
                     controller.changeSelectedTodo(0);
-                    renderTodoDetail(project.todos[0]);
+                    renderTodoList();
+                    renderTodoDetail();
                 }
-            });            
+
+                if(index === controller.getSelectedProject()) {                    
+                    const projectTitle = document.querySelectorAll('.project-title');
+                    projectTitle.forEach((title) => {
+                        if (title.getAttribute('data-index') !== controller.getSelectedProject()) {
+                            title.classList.remove('selected');
+                        }
+                    });
+                    titleBtn.classList.add('selected');
+                }
+            });
+
+            if(index === controller.getSelectedProject()) {
+                titleBtn.classList.add('selected');
+            }          
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = '✖';
@@ -111,17 +127,32 @@ const view = (() => {
             const todoDateTimeEl = document.createElement('span');
 
             button.classList.add('todo-item');
+            button.setAttribute('data-index', todoIndex);
             button.addEventListener('click', () => {
                 controller.changeSelectedTodo(todoIndex);
-                renderTodoDetail(todo);
+
+                if(todoIndex === controller.getSelectedTodo()) {                    
+                    const todoItems = document.querySelectorAll('.todo-item');
+                    todoItems.forEach((item) => {
+                        if (item.getAttribute('data-index') !== controller.getSelectedTodo()) {
+                            item.classList.remove('selected');
+                        }
+                    });
+                    button.classList.add('selected');
+                }
+                
+                renderTodoDetail();
             });
+            if(todoIndex === controller.getSelectedTodo()) {
+                button.classList.add('selected');
+            }
 
             todoCheckbox.setAttribute('type', 'checkbox');            
             todoCheckbox.checked = todo.completed;
             todoCheckbox.addEventListener('change', () => {
                 todo.toggleCompleted();
-                renderTodoDetail(todo);
-                renderTodoList(project);
+                renderTodoDetail();
+                renderTodoList();
             });
             
             todoTitle.textContent = todo.title;
@@ -192,8 +223,7 @@ const view = (() => {
                         controller.changeSelectedProject(projectIndex);
                         controller.changeSelectedTodo(todosProject.todos.length - 1);
                         
-                        renderTodoList();
-                        renderTodoDetail();
+                        render();
                     });
     
                     todoProjectDropdown.append(li);

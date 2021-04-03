@@ -19,6 +19,17 @@ textarea {
 #container {
     display: grid;
     grid-template-columns: 268px 1fr 1fr;
+    height: 100vh;
+}
+
+#sidebar, #todo-list-container {
+    padding: 20px
+}
+
+/* Project list side */
+
+#sidebar {
+    border-right: 1px solid rgba(0,0,0,0.1);
 }
 
 #project-list li {
@@ -57,6 +68,29 @@ textarea {
     visibility: hidden;
 }
 
+/* Todo list side */
+
+#todo-list-container {
+    border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+.todo-item {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#todo-list-project-title {
+    margin-top: 0;
+}
+
+#todo-input {
+    width: 97%;
+    padding: 5px 5px;
+}
+
+/* Add project modal */
+
 #modal-bg {
     position: fixed;
     top: 0;
@@ -80,14 +114,32 @@ textarea {
     margin: 0 0 30px 0;
 }
 
-#todo-toolbar {
+/* Todo detail side */
+
+#todo-detail {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
 }
 
-.todo-item {
-    width: 100%;
+#todo-detail-top {
+    padding: 20px 20px 10px 20px;
+}
+
+#todo-detail-title {
+    display: block;
+    width: 97.80%;
+    padding: 5px 5px;
+}
+
+#todo-detail-desc{
+    width: 99%;
+    height: 100%;
+}
+
+#todo-toolbar {
     display: flex;
-    justify-content: space-between;
 }
 
 #todo-project {
@@ -95,7 +147,18 @@ textarea {
 }
 
 #todo-project-dropdown {
-    background-color: grey;
+    text-align: center;
+    width: 100%;
+    background-color: white;
     position: absolute;
-    bottom: 0;
+    top: -20px;
+    margin: 0
+}
+
+#todo-project-dropdown button {
+    width: 100%;
+}
+
+.selected {
+    background-color: rgba(0,0,0,0.075);
 }
