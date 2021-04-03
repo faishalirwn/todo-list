@@ -93,13 +93,16 @@ const view = (() => {
             todoListCompletedEl.removeChild(todoListCompletedEl.lastChild);            
         }
 
-        const sortedTodos = project.todos.slice().sort((a, b) => {
+        project.todos.sort((a, b) => {
             const aDate = parse(`${a.date} ${a.time}`, 'yyyy-MM-dd HH:mm', new Date());
             const bDate = parse(`${b.date} ${b.time}`, 'yyyy-MM-dd HH:mm', new Date());
             return compareAsc(aDate, bDate);
         });
 
-        sortedTodos.forEach((todo) => {
+        const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
+
+        project.todos.forEach((todo, todoIndex) => {
             const li = document.createElement('li');
             const button = document.createElement('button');
             const div = document.createElement('div');
@@ -109,7 +112,7 @@ const view = (() => {
 
             button.classList.add('todo-item');
             button.addEventListener('click', () => {
-                controller.changeSelectedTodo(todo.index);
+                controller.changeSelectedTodo(todoIndex);
                 renderTodoDetail(todo);
             });
 
@@ -327,8 +330,8 @@ const controller = (() => {
 
         const timeElapsed = Date.now();
         const dateNow = new Date(timeElapsed);
-        const sampleTodo1 = new Todo('Buy drone', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 0, 0);
-        const sampleTodo2 = new Todo('Buy earring', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1, 0);
+        const sampleTodo1 = new Todo('Buy drone', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 0);
+        const sampleTodo2 = new Todo('Buy earring', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1);
         sampleProject1.addTodo(sampleTodo1);
         sampleProject2.addTodo(sampleTodo2);        
 
@@ -386,7 +389,7 @@ const controller = (() => {
 
                 const project = projectStorage.getProjectByIndex(controller.getSelectedProject());
 
-                const newTodo = new Todo(todoInputVal, '', format(dateNow, 'yyyy-MM-dd'), '00:00', false, state._selectedProject, project.todos.length);
+                const newTodo = new Todo(todoInputVal, '', format(dateNow, 'yyyy-MM-dd'), '00:00', false, state._selectedProject);
                 addTodo(newTodo);
             }
         });
@@ -449,7 +452,7 @@ if (!localStorage.getItem('projects')) {
         const newProject = new Project(project.title);
         projectStorage.addProject(newProject)
         project.todos.forEach((todo) => {
-            const newTodo = new Todo(todo.title, todo.desc, todo.date, todo.time, todo.completed, todo.projectIndex, todo.index);
+            const newTodo = new Todo(todo.title, todo.desc, todo.date, todo.time, todo.completed, todo.projectIndex);
             newProject.addTodo(newTodo);
         });
     });
