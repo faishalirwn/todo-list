@@ -284,6 +284,11 @@ const controller = (() => {
         }
     }
 
+    const updateTodo = (prop, value) => {
+        const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+        todo[prop] = value;
+    }
+
     const getSelectedProject = () => state._selectedProject;
 
     const getSelectedTodo = () => state._selectedTodo;
@@ -378,36 +383,22 @@ const controller = (() => {
         });
 
         todoDetailTitle.addEventListener('change', () => {
-            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
-            todo.title = todoDetailTitle.value;
+            updateTodo(title, todoDetailTitle.value);
             view.renderTodoList();
         });
 
         todoDetailDesc.addEventListener('keypress', () => {
-            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
-            todo.desc = todoDetailDesc.value;
+            updateTodo(desc, todoDetailDesc.value);
         });
 
         todoDetailDate.addEventListener('change', () => {
-            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
-            todo.date = todoDetailDate.value;
-            if (todo.time === '') {
-                todo.time = '00:00';
-                view.renderTodoDetail();
-            }
+            updateTodo(date, todoDetailDate.value);
             view.renderTodoList();
         });
 
         todoDetailTime.addEventListener('change', () => {
+            updateTodo(time, todoDetailTime.value);
             const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
-            todo.time = todoDetailTime.value;
-            if (todo.date === '') {
-                const timeElapsed = Date.now();
-                const dateNow = new Date(timeElapsed);
-                // todo.date = `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
-                todo.date = format(dateNow, 'yyyy-MM-dd');
-                view.renderTodoDetail();
-            }
             view.renderTodoList();
         });
 
