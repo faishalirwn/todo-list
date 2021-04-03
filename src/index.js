@@ -214,6 +214,8 @@ const controller = (() => {
         projectStorage.addProject(project);
 
         const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
+
         state._selectedTodo = 0;
         state._selectedProject = projects.length - 1;
         const todoListSide = document.querySelector('#todo-list-container');
@@ -228,9 +230,11 @@ const controller = (() => {
     }
 
     const removeProject = (projectIndex) => {
-        projectStorage.removeProject(projectIndex);        
-   
+        projectStorage.removeProject(projectIndex);
+
         const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
+   
         if (projects.length === 0) {
             state._selectedProject = -1;
             state._selectedTodo = -1;
@@ -247,11 +251,15 @@ const controller = (() => {
             view.render();
         } else {
             view.renderProjects();
-        }
+        }        
     }
 
     const updateProject = (projectIndex, title) => {
-        projectStorage.updateProject(projectIndex, title);        
+        projectStorage.updateProject(projectIndex, title);
+
+        const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
+
         view.render();
     }
 
@@ -263,6 +271,10 @@ const controller = (() => {
         } else {
             state._selectedTodo = project.todos.length - 1;
         }
+
+        const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
+
         view.renderTodoList();
         view.renderTodoDetail();
     }
@@ -282,11 +294,17 @@ const controller = (() => {
             view.renderTodoDetail();
             view.renderTodoList();
         }
+
+        const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
     }
 
     const updateTodo = (prop, value) => {
         const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
         todo[prop] = value;
+
+        const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
     }
 
     const getSelectedProject = () => state._selectedProject;
@@ -313,7 +331,10 @@ const controller = (() => {
         const sampleTodo2 = new Todo('Buy earring', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1);
         sampleProject1.addTodo(sampleTodo1);
         sampleProject2.addTodo(sampleTodo2);        
-        
+
+        const projects = projectStorage.getProjects();
+        localStorage.setItem("projects", JSON.stringify(projects));
+
         view.render();
     }
 
@@ -383,22 +404,21 @@ const controller = (() => {
         });
 
         todoDetailTitle.addEventListener('change', () => {
-            updateTodo(title, todoDetailTitle.value);
+            updateTodo('title', todoDetailTitle.value);
             view.renderTodoList();
         });
 
         todoDetailDesc.addEventListener('keypress', () => {
-            updateTodo(desc, todoDetailDesc.value);
+            updateTodo('desc', todoDetailDesc.value);
         });
 
         todoDetailDate.addEventListener('change', () => {
-            updateTodo(date, todoDetailDate.value);
+            updateTodo('date', todoDetailDate.value);
             view.renderTodoList();
         });
 
         todoDetailTime.addEventListener('change', () => {
-            updateTodo(time, todoDetailTime.value);
-            const todo = projectStorage.getTodoByIndex(state._selectedProject, state._selectedTodo);
+            updateTodo('time', todoDetailTime.value);
             view.renderTodoList();
         });
 
@@ -416,5 +436,21 @@ const controller = (() => {
     return { removeProject, updateProject, getSelectedProject, getSelectedTodo, changeSelectedProject, changeSelectedTodo, initializeProjects, initializeEventListener }
 })();
 
-controller.initializeProjects();
+
+if (!localStorage.getItem('projects')) {
+    alert('ha');
+    controller.initializeProjects();
+} else {
+    alert('hu');
+    const projectsLocalStorage = JSON.parse(localStorage.getItem('projects'));
+    projectsLocalStorage.forEach((project) => {
+        const newProject = new Project(project.title);
+        projectStorage.addProject(newProject)
+        project.todos.forEach((todo) => {
+            const newTodo = new Todo(todo.title, todo.desc, todo.date, todo.time, todo.completed, todo.projectIndex);
+            newProject.addTodo(newTodo);
+        });
+    });
+    view.render();
+}
 controller.initializeEventListener();
