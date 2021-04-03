@@ -364,10 +364,18 @@ const controller = (() => {
 
         const timeElapsed = Date.now();
         const dateNow = new Date(timeElapsed);
-        const sampleTodo1 = new Todo('Buy drone', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 0);
-        const sampleTodo2 = new Todo('Buy earring', 'Now man!', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1);
+        const sampleTodo1 = new Todo('Have a good day', 'Tis but a description', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 0);
+        const sampleTodo2 = new Todo('Have a wonderful life', 'Tis too', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 1);
+        const sampleTodo3 = new Todo('Do a backflip', 'Also tis', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 2);
+        const sampleTodo4 = new Todo('Cry yourself to sleep, jk', 'What are you doing', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 3);
+        const sampleTodo5 = new Todo('Go immerse', 'Be mindless, don\'t be present', format(dateNow, 'yyyy-MM-dd'), '00:00', true, 1);
+        const sampleTodo6 = new Todo('Profit?', 'Stonks', format(dateNow, 'yyyy-MM-dd'), '00:00', false, 2);
         sampleProject1.addTodo(sampleTodo1);
-        sampleProject2.addTodo(sampleTodo2);        
+        sampleProject1.addTodo(sampleTodo2);
+        sampleProject1.addTodo(sampleTodo3);
+        sampleProject1.addTodo(sampleTodo4);
+        sampleProject2.addTodo(sampleTodo5);
+        sampleProject2.addTodo(sampleTodo6);
 
         const projects = projectStorage.getProjects();
         localStorage.setItem("projects", JSON.stringify(projects));
