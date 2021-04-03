@@ -1,4 +1,4 @@
-# Todo List
+# 📝 Todo List
 
 Todo List built using HTML, CSS, and Vanilla JS. 
 
