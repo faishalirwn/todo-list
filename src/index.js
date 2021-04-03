@@ -29,7 +29,7 @@ const view = (() => {
                     controller.changeSelectedTodo(0);
                     renderTodoDetail(project.todos[0]);
                 }
-            });
+            });            
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = '✖';
@@ -156,47 +156,50 @@ const view = (() => {
         const projects = projectStorage.getProjects();        
         const project = projectStorage.getProjectByIndex(controller.getSelectedProject());        
         const todo = projectStorage.getTodoByIndex(controller.getSelectedProject(), controller.getSelectedTodo());
-        alert(`${controller.getSelectedProject()}, ${controller.getSelectedTodo()}`);
 
-        todoDetailSide.classList.remove('visibility-hidden');
-        todoDetailStatus.checked = todo.completed;        
-        todoDetailTitle.value = todo.title;   
-        todoDetailDesc.value = todo.desc;
-        todoDetailDate.value = todo.date;
-        todoDetailTime.value = todo.time;
-        todoProjectCurrentText.textContent = project.title;
-
-        while (todoProjectDropdown.firstChild) {            
-            todoProjectDropdown.removeChild(todoProjectDropdown.lastChild);            
-        }
-
-        projects.forEach((projectVal, projectIndex) => {
-            if (projectIndex !== todo.projectIndex) {
-                const li = document.createElement('li');
-                const button = document.createElement('button');
-                button.textContent = projectVal.title;
-                li.append(button);
-
-                button.addEventListener('click', () => {
-                    project.removeTodo(controller.getSelectedTodo());
-                    
-                    todo.projectIndex = projectIndex;
-                    const todosProject = projectStorage.getProjectByIndex(projectIndex);
-                    todosProject.addTodo(todo);
-                    
-                    todoProjectDropdown.classList.add('display-none');
-                    todoProjectCurrentText.textContent = todosProject.title;
-
-                    controller.changeSelectedProject(projectIndex);
-                    controller.changeSelectedTodo(todosProject.todos.length - 1);
-                    
-                    renderTodoList();
-                    renderTodoDetail();
-                });
-
-                todoProjectDropdown.append(li);
+        if (project.todos.length === 0) {
+            todoDetailSide.classList.add('visibility-hidden');
+        } else {
+            todoDetailSide.classList.remove('visibility-hidden');
+            todoDetailStatus.checked = todo.completed;        
+            todoDetailTitle.value = todo.title;   
+            todoDetailDesc.value = todo.desc;
+            todoDetailDate.value = todo.date;
+            todoDetailTime.value = todo.time;
+            todoProjectCurrentText.textContent = `⬆️ ${project.title}`;
+    
+            while (todoProjectDropdown.firstChild) {            
+                todoProjectDropdown.removeChild(todoProjectDropdown.lastChild);            
             }
-        });
+    
+            projects.forEach((projectVal, projectIndex) => {
+                if (projectIndex !== todo.projectIndex) {
+                    const li = document.createElement('li');
+                    const button = document.createElement('button');
+                    button.textContent = projectVal.title;
+                    li.append(button);
+    
+                    button.addEventListener('click', () => {
+                        project.removeTodo(controller.getSelectedTodo());
+                        
+                        todo.projectIndex = projectIndex;
+                        const todosProject = projectStorage.getProjectByIndex(projectIndex);
+                        todosProject.addTodo(todo);
+                        
+                        todoProjectDropdown.classList.add('display-none');
+                        todoProjectCurrentText.textContent = todosProject.title;
+    
+                        controller.changeSelectedProject(projectIndex);
+                        controller.changeSelectedTodo(todosProject.todos.length - 1);
+                        
+                        renderTodoList();
+                        renderTodoDetail();
+                    });
+    
+                    todoProjectDropdown.append(li);
+                }
+            });
+        }
     }
 
     const render = () => {
