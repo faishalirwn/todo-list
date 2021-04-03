@@ -156,6 +156,7 @@ const view = (() => {
         const projects = projectStorage.getProjects();        
         const project = projectStorage.getProjectByIndex(controller.getSelectedProject());        
         const todo = projectStorage.getTodoByIndex(controller.getSelectedProject(), controller.getSelectedTodo());
+        alert(`${controller.getSelectedProject()}, ${controller.getSelectedTodo()}`);
 
         todoDetailSide.classList.remove('visibility-hidden');
         todoDetailStatus.checked = todo.completed;        
@@ -293,8 +294,8 @@ const controller = (() => {
             view.renderProjects();
             view.renderTodoList();
         } else {
-            state._selectedTodo = state._selectedTodo - 1;
-            view.renderTodoDetail();
+            state._selectedTodo = -1;
+            todoDetailSide.classList.add('visibility-hidden');
             view.renderTodoList();
         }
 
